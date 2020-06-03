@@ -1,6 +1,6 @@
 all: dnsrush
 
 dnsrush: dnsrush.go
-	go build dnsrush.go
+	CGO_ENABLED=0 go build dnsrush.go
 	strip -x dnsrush
 	upx dnsrush
