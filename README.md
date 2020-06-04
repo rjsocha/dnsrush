@@ -22,7 +22,8 @@ docker exec dnsrushd new
 docker exec dnsrushd ns <IP>
 
 # Upload playlist
-curl -sfL https://raw.githubusercontent.com/rjsocha/dnsrush/master/example/example.net.play | docker exec -i dnsrushd upload
+curl -sfL https://raw.githubusercontent.com/rjsocha/dnsrush/master/example/example.net.play | \
+ docker exec -i dnsrushd upload
 
 # Deploy worker nodes 
 docker exec dnsrushd deploy
