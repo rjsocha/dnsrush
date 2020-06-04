@@ -26,6 +26,8 @@ curl -sfL https://raw.githubusercontent.com/rjsocha/dnsrush/master/example/examp
  docker exec -i dnsrushd upload
 
 # Deploy worker nodes 
+# This will print command to run on remote node 
+# You can run any number of worker nodes
 docker exec dnsrushd deploy
 
 # List connected nodes
@@ -36,6 +38,11 @@ docker exec dnsrushd play 1000
 
 # get result from selected node or all nodes
 docker exec dnsrushd result [<node-id>]
+
+
+# Purge results/old nodes (all results will be deleted!)
+# Active (READY) nodes will not be deleted
+docker exec dnsrushd purge
 ```
 
 # dnsrush
