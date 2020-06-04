@@ -34,8 +34,8 @@ docker exec dnsrushd list
 # Run benchmark
 docker exec dnsrushd play 1000
 
-# get result from node
-docker exec dnsrushd result <node-id>
+# get result from selected node or all nodes
+docker exec dnsrushd result [<node-id>]
 ```
 
 # dnsrush

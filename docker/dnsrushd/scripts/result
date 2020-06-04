@@ -7,11 +7,41 @@ else
 	exit 10
 fi
 
-node=$1
-dt="/var/www/html/deploy/$id/node/$node"
+function dump_all_results() {
+dt="/var/www/html/deploy/$id"
 [[ -d $dt ]] || exit 10
 
-if [[ -f $dt/result ]]
+if [[ -d $dt/node ]]
 then
-	cat $dt/result
+	for node in $(find $dt/node -maxdepth 1 -mindepth 1 -type d -printf "%f\n")
+	do
+		if [[ -f $dt/node/$node/result ]]
+		then
+			s="DONE"
+		fi
+		if [[ -f $dt/node/$node/error ]]
+		then
+			s="ERROR"
+		fi
+		[[ $s == "DONE" ]] && cat $dt/node/$node/result
+	done
+fi
+}
+
+function combine_results() {
+	dump_all_results | sort -s -n -k 1,1
+}
+
+if [[ -n $1 ]]
+then
+	node=$1
+	dt="/var/www/html/deploy/$id/node/$node"
+	[[ -d $dt ]] || exit 10
+	
+	if [[ -f $dt/result ]]
+	then
+		cat $dt/result
+	fi
+else
+	combine_results
 fi
