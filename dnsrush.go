@@ -4,7 +4,7 @@ package main
 // for internal use only
 // one day I will learn go... one day
 
-// v 0.1
+// v 0.2
 // Public Domain
 
 import (
