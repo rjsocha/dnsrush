@@ -1,0 +1,76 @@
+#!/bin/bash
+# $1 zone
+# $2 count
+
+function simple_ip() {
+  o1=$(($(( $1 & 0x00ff0000)) >> 16))
+  o2=$(($(( $1 & 0x0000ff00)) >> 8))
+  o3=$(( $1 & 0x000000ff))
+  echo -n "10.$o1.$o2.$o3"
+}
+
+if [[ -z $1 ]] || [[ -z $2 ]] || ! [[ $2 =~ ^[0-9]+$ ]]
+then
+	echo "ups..."
+	exit 1
+fi
+zone=$1
+count=$2
+[[ $zone =~ \.$ ]] || zone="${zone}."
+
+now=$(date +%s)
+echo "$zone                IN   SOA ns1.$zone dns.$zone $now 86400 900 1209600 600" >"${zone}zone"
+echo "@                    IN   NS ns1.$zone" >>"${zone}zone"
+echo "@                    IN   NS ns2.$zone" >>"${zone}zone"
+echo "@                    IN   MX 5 mx1.$zone" >>"${zone}zone"
+echo "@                    IN   MX 5 mx2.$zone" >>"${zone}zone"
+echo "$zone          SOA" >"${zone}play"
+echo "@          NS" >>"${zone}play"
+echo "@          MX" >>"${zone}play"
+echo "ns1                  IN   A 127.0.0.1" >>"${zone}zone"
+echo "ns2                  IN   A 127.0.0.1" >>"${zone}zone"
+echo "mx1                  IN   A 127.0.0.1" >>"${zone}zone"
+echo "mx2                  IN   A 127.0.0.1" >>"${zone}zone"
+for c in $(seq 1 $count)
+do
+ r=$(($RANDOM%100))
+ if [[  $r -gt 95 ]]
+ then
+	t="TXT"
+ elif [[ $r -gt 85 ]]
+ then
+        t="MX"
+ elif [[ $r -gt 55 ]]
+ then
+ 	t="CNAME"
+ else
+	t="A"
+ fi
+ n=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | md5sum)
+ set -- $n
+ n1=$1
+ ip=$(simple_ip $c)
+ if [[ $t == "A" ]]
+ then
+	 echo "$n1 A"  >>"${zone}play"
+	 echo "$n1 IN   A $ip" >>"${zone}zone"
+ elif [[ $t == "CNAME" ]]
+ then
+	 echo "cname.$n1 A"  >>"${zone}play"
+	 echo "cname.$n1 IN   A $ip" >>"${zone}zone"
+	 echo "$n1 CNAME"  >>"${zone}play"
+	 echo "$n1 IN CNAME cname.$n1.$zone" >>"${zone}zone"
+ elif [[ $t == "MX" ]]
+ then
+	 echo "mx1.$n1 A"  >>"${zone}play"
+	 echo "mx1.$n1 IN   A $ip" >>"${zone}zone"
+	 echo "$n1 MX"  >>"${zone}play"
+	 echo "$n1 IN MX 5 mx1.$n1.$zone" >>"${zone}zone"
+ elif [[ $t == "TXT" ]]
+ then
+	echo "$n1 TXT"  >>"${zone}play"
+	r=$(($RANDOM%255))
+	txt=$(dd if=/dev/urandom bs=$r count=1 2>/dev/null | base64 -w 0)
+	 echo "$n1 IN TXT \"$txt\"" >>"${zone}zone"
+ fi
+done

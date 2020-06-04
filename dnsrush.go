@@ -4,8 +4,9 @@ package main
 // for internal use only
 // one day I will learn go... one day
 
-// v 0.2
+// v 0.3
 // Public Domain
+// 0.3 - output format change
 
 import (
 	"fmt"
@@ -146,7 +147,7 @@ func play_mode1(ns string) {
 		q:=pl[s].query
 		qt:=pl[s].qtype
 		code,rcode,start,rtt:=exeQ(q,qt,ns)
-		fmt.Printf("%d %d %d %d %s %d\n",code,rcode,int64(start),int64(rtt),q,qt)
+		fmt.Printf("%d %d %d %d %s %d\n",int64(start),code,rcode,int64(rtt),q,qt)
 	}
 }
 
@@ -158,7 +159,7 @@ func play_mode2(ns string) {
 		q:=pl[s].query
 		qt:=pl[s].qtype
 		code,rcode,start,rtt:=exeQ(q,qt,ns)
-		fmt.Printf("%d %d %d %d %s %d\n",code,rcode,int64(start),int64(rtt),q,qt)
+		fmt.Printf("%d %d %d %d %s %d\n",int64(start),code,rcode,int64(rtt),q,qt)
 		s=(s+1)%l
 	}
 }
@@ -172,6 +173,7 @@ func play(mode int,ns string) {
 func usage() {
 	fmt.Fprintf(os.Stderr,"Usage: %s \n",os.Args[0])
 	flag.PrintDefaults()
+	os.Exit(1)
 }
 
 func main() {
@@ -182,7 +184,6 @@ func main() {
 	if(*a_verify==false) {
 		if(*a_ns == "") {
 			usage()
-			os.Exit(1)
 		}
 		ns_ip := net.ParseIP(*a_ns)
 		if ns_ip.To4() == nil {
