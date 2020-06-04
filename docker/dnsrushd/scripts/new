@@ -1,0 +1,5 @@
+#!/bin/bash
+res=$(curl -s http://localhost/register/new) || exit $?
+[[ ${#res} -lt 1 ]] && exit 1
+echo -n "${res}" >/last.id
+exit 0

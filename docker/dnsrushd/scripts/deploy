@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+function show_deploy() {
+	me="<host:port>"
+	[[ -s /var/www/html/deploy/me ]] && me=$(<"/var/www/html/deploy/me")
+	echo "docker run -d --rm --net host rjsocha/dnsrush worker:$me $1"
+}
+if [[ -z $1 ]]
+then
+	if [[ -f /last.id ]]
+	then
+		id=$(</last.id)
+	fi
+else 
+	id=$1
+fi
+
+if [[ -d /var/www/html/deploy/$id ]]
+then
+	show_deploy $id
+	exit 0
+fi
+exit 10

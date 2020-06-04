@@ -1,0 +1,64 @@
+#!/bin/bash
+if [[ -z $1 ]]
+then
+	if [[ -f /last.id ]]
+	then
+		id=$(</last.id)
+	else
+		exit 10
+	fi
+else
+	id=$1
+fi
+
+dt="/var/www/html/deploy/$id"
+[[ -d $dt ]] || exit 10
+
+if [[ -d $dt/node ]]
+then
+	for node in $(find $dt/node -maxdepth 1 -mindepth 1 -type d -printf "%f\n")
+	do
+		ip="-"
+		hn="-"
+		[[ -f $dt/node/$node/ip ]] && ip=$(<"$dt/node/$node/ip")
+		[[ -f $dt/node/$node/hostname ]] && hn=$(<"$dt/node/$node/hostname")
+		now=$(date +%s)
+		alive="DEAD "
+		if [[ -f $dt/node/$node/ping ]]
+		then
+			ping=$(stat -c "%Y" "$dt/node/$node/ping")
+			dlt=$(($now - $ping))
+			[[ $dlt -le 2 ]] && alive="READY"
+		fi
+		if [[ -f $dt/node/$node/status ]]
+		then
+			info=$(<$dt/node/$node/status)
+			alive="SUKNW"
+			if [[ $info == "wait" ]]
+			then
+				alive="SCHED"
+			elif [[ $info == "run" ]]
+			then
+				alive="EXEC "
+			elif [[ $info == "done" ]]
+			then
+				alive="UPLD "
+			fi
+		fi
+		if [[ -f $dt/node/$node/result ]]
+		then
+			alive="DONE "
+		fi
+		if [[ -f $dt/node/$node/error ]]
+		then
+			alive="ERROR"
+		fi
+		echo "$alive $node / $ip / $hn"
+		if [[ $alive == "ERROR" ]] && [[ -f $dt/node/$node/error.msg ]]
+		then
+			echo -ne "\tERROR: "
+			str=$(head -n 1 $dt/node/$node/error.msg)
+			echo "$str"
+		fi
+	done
+fi

@@ -1,0 +1,17 @@
+#!/bin/bash
+if [[ -f /last.id ]]
+then
+	id=$(</last.id)
+else
+	echo "system not ready"
+	exit 10
+fi
+
+node=$1
+dt="/var/www/html/deploy/$id/node/$node"
+[[ -d $dt ]] || exit 10
+
+if [[ -f $dt/result ]]
+then
+	cat $dt/result
+fi

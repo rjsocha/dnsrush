@@ -1,0 +1,15 @@
+#!/bin/bash
+if [[ -z $1 ]]
+then
+	echo "missing hostname"
+	exit 10
+fi
+me=$1
+
+if [[ -d /var/www/html/deploy/ ]]
+then
+	echo -n $me >"/var/www/html/deploy/me"
+else
+	echo "system not ready"
+	exit 10
+fi

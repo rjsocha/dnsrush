@@ -1,0 +1,21 @@
+#!/bin/bash
+if [[ -f /last.id ]]
+then
+	id=$(</last.id)
+else 
+	echo "system not ready"
+	exit 10
+fi
+if [[ -z $1 ]]
+then
+	echo "missing nameserver address"
+	exit 10
+fi
+ns=$1
+
+if [[ -d /var/www/html/deploy/$id ]]
+then
+	echo -n $ns >"/var/www/html/deploy/$id/ns"
+else
+	exit 10
+fi

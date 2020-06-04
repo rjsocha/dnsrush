@@ -1,0 +1,17 @@
+#!/bin/bash
+if [[ -z $1 ]]
+then
+	if [[ -f /last.id ]]
+	then
+		id=$(</last.id)
+	else
+		exit 10
+	fi
+else
+	id=$1
+fi
+
+dt="/var/www/html/deploy/$id"
+[[ -d $dt ]] || exit 10
+
+echo -n "quit" >"$dt/command"

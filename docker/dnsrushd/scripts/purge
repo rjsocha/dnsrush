@@ -1,0 +1,31 @@
+#!/bin/bash
+if [[ -z $1 ]]
+then
+	if [[ -f /last.id ]]
+	then
+		id=$(</last.id)
+	else
+		exit 10
+	fi
+else
+	id=$1
+fi
+
+dt="/var/www/html/deploy/$id"
+[[ -d $dt ]] || exit 10
+
+if [[ -d $dt/node ]]
+then
+	for node in $(find $dt/node -maxdepth 1 -mindepth 1 -type d -printf "%f\n")
+	do
+		now=$(date +%s)
+		alive="DEAD "
+		if [[ -f $dt/node/$node/ping ]]
+		then
+			ping=$(stat -c "%Y" "$dt/node/$node/ping")
+			dlt=$(($now - $ping))
+			[[ $dlt -le 2 ]] && alive="READY"
+		fi
+		[[ $alive != "READY" ]] && rm -rf $dt/node/$node
+	done
+fi

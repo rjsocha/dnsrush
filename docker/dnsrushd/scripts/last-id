@@ -1,0 +1,7 @@
+#!/bin/bash
+if [[ -s /last.id ]]
+then
+	cat /last.id
+else
+	exit 10
+fi

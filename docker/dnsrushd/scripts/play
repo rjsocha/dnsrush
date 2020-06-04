@@ -1,0 +1,45 @@
+#!/bin/bash
+if [[ -f /last.id ]]
+then
+	id=$(</last.id)
+else
+	echo "server is not ready"
+	exit 10
+fi
+if [[ -z $1 ]]
+then
+	echo "missing number of queries"
+	exit 10
+fi
+if ! [[ $1 =~ ^[0-9]+ ]]
+then
+	echo "count is not a number"
+	exit 10
+fi
+count=$1
+
+mode=random
+[[ $2 == "sequential" ]] && mode="sequential"
+
+if [[ -d /var/www/html/deploy/$id ]]
+then
+	if ! [[ -s /var/www/html/deploy/$id/ns ]]
+	then
+		echo "nameserver not set"
+		exit 10
+	fi
+	if [[ -s /var/www/html/deploy/$id/playlist ]]
+	then
+		
+		echo -n $count >"/var/www/html/deploy/$id/count"
+		echo -n $mode >"/var/www/html/deploy/$id/mode"
+		sched=$(( $(date "+%s") + 10))
+		echo -n $sched >"/var/www/html/deploy/$id/schedule"
+		echo -n "play" >"/var/www/html/deploy/$id/command"
+	else
+		echo "missing or empty playlist"
+		exit 10
+	fi
+else
+	exit 10
+fi

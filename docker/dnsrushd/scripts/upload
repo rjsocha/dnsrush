@@ -1,0 +1,14 @@
+#!/bin/bash
+if [[ -f /last.id ]]
+then
+	id=$(</last.id)
+else
+	echo "server is not ready"
+	exit 10
+fi
+if [[ -d /var/www/html/deploy/$id ]]
+then
+	cat </dev/stdin >/var/www/html/deploy/$id/playlist
+else
+	exit 10
+fi
