@@ -41,11 +41,11 @@ or
 
 # Output
 ```
-0 0 1591177993659639359 181523 example.com. 1
+1591177993659639359 0 0 181523 example.com. 1
 
+start_ts	(query timestamp in nanoseconds)
 status 		(0 - OK, 1 - connection error, 2 - query error)
 rcode  		(0 - OK)
-start_ts	(query timestamp in nanoseconds)
 rtt		(response time in nanoseconds)
 query		
 query_type
