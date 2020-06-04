@@ -1,8 +1,0 @@
-example.com.	soa
-@		txt
-@		mx
-@		ns
-@		a
-ftp		a
-www		a
-lb		cname
