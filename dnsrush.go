@@ -26,6 +26,7 @@ var (
 	a_playlist   = flag.String("playlist","","playlist input file")
 	a_playmode   = flag.String("mode","random","playlist mode: random/sequential")
 	a_timeout    = flag.Int("t",25,"connection timeout (in ms)")
+	a_verify     = flag.Bool("verify",false,"verify playlist")
 )
 
 type Playlist struct {
@@ -177,17 +178,19 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 	timeout=time.Duration(*a_timeout)
-
-	if(*a_ns == "") {
-		usage()
-		os.Exit(1)
+	ns_addr := ""
+	if(*a_verify==false) {
+		if(*a_ns == "") {
+			usage()
+			os.Exit(1)
+		}
+		ns_ip := net.ParseIP(*a_ns)
+		if ns_ip.To4() == nil {
+			fmt.Fprintf(os.Stderr,"nameserver is not an IPv4 address\n")
+			os.Exit(1)
+		}
+		ns_addr=*a_ns + ":53"
 	}
-	ns_ip := net.ParseIP(*a_ns)
-	if ns_ip.To4() == nil {
-		fmt.Fprintf(os.Stderr,"nameserver is not an IPv4 address\n")
-		os.Exit(1)
-	}
-	ns_addr := *a_ns + ":53"
 	q:=""
 	qt:=uint16(0)
 	if(*a_playlist != "") {
@@ -202,6 +205,9 @@ func main() {
 			os.Exit(1)
 		}
 		readPlaylist(*a_playlist)
+		if(*a_verify) {
+			os.Exit(0)
+		}
 		if(len(pl)<1) {
 			fmt.Fprintf(os.Stderr,"error: empty playlist\n")
 			os.Exit(1)
