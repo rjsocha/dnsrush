@@ -28,4 +28,5 @@ then
 		fi
 		[[ $alive != "READY" ]] && rm -rf $dt/node/$node
 	done
+	[[ -f $dt/command ]] && rm -f "$dt/command"
 fi

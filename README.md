@@ -43,6 +43,11 @@ docker exec dnsrushd result [<node-id>]
 # Purge results/old nodes (all results will be deleted!)
 # Active (READY) nodes will not be deleted
 docker exec dnsrushd purge
+
+# Shutdown server
+docker exec dnsrushd quit
+# or 
+docker stop dnsrushd
 ```
 
 # dnsrush
