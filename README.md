@@ -1,6 +1,7 @@
 # dnsrush
 Very simple (qucik&dirty) DNS server benchmark tool in Go.
 
+License: public domain
 
 # Usage
 
